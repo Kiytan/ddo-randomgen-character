@@ -236,14 +236,31 @@
                 enhancementTrees = classesCopy[classIdx].enhancementTrees;
             }
 
+
+            const selectedClass = classesCopy.find(_class => _class.alias === alias);
+
+        // If we selected an archetype, remove its base class and other archetypes of the same base
+        if (selectedClass?.baseClass) {
+            const baseClassAlias = selectedClass.baseClass;
+            classesCopy = classesCopy.filter(function(_class) {
+                return _class.alias !== baseClassAlias && _class.baseClass !== baseClassAlias;
+            });
+        }
+
+        // if baseclass and alias match, don't use (so archetypes don't select base class)
+        classesCopy = classesCopy.filter(function(_class) {
+            return _class.baseClass !== alias;
+        });
+
             // paladins/sacred fist cant multiclass with : bard, barbarian, druid, and acolyte of the skin
             // monks cant multiclass with : bard, barbarian
             // archetypes can't be the core class
             switch (alias) {
+                
                 case 'bard':
                 case 'stormsinger':
                     classesCopy = classesCopy.filter(function( _class ) {
-                        return !["paladin", "sacred_fist", "monk", "stormsinger", "bard"].includes(_class.alias);
+                        return !["paladin", "sacred_fist", "monk"].includes(_class.alias);
                     })
                     break;
                 case 'barbarian':
@@ -254,35 +271,17 @@
                 case 'druid':
                 case 'blight_caster':
                     classesCopy = classesCopy.filter(function( _class ) {
-                        return !["paladin", "sacred_fist", "blight_caster", "druid"].includes(_class.alias);
-                    })
-                    break;
-                case 'dark_apostate':
-                case 'cleric':
-                    classesCopy = classesCopy.filter(function( _class ) {
-                        return !["cleric", "dark_apostate"].includes(_class.alias);
-                    })
-                    break;
-                case 'dark_hunter':
-                case 'ranger':
-                    classesCopy = classesCopy.filter(function( _class ) {
-                        return !["ranger", "dark_hunter"].includes(_class.alias);
+                        return !["paladin", "sacred_fist"].includes(_class.alias);
                     })
                     break;
                 case 'acolyte_of_the_skin':
                     classesCopy = classesCopy.filter(function( _class ) {
                         return !["paladin", "sacred_fist", "warlock"].includes(_class.alias);
                     })
-                    break;
-                case 'warlock':
-                    classesCopy = classesCopy.filter(function( _class ) {
-                        return !["acolyte_of_the_skin"].includes(_class.alias);
-                    })
-                    break;
                 case 'paladin':
                 case 'sacred_fist':
                     classesCopy = classesCopy.filter(function( _class ) {
-                        return !["bard", "barbarian", "druid", "acolyte_of_the_skin", "paladin", "sacred_fist"].includes(_class.alias);
+                        return !["bard", "barbarian", "druid", "acolyte_of_the_skin"].includes(_class.alias);
                     })
                     break;
                 case 'monk':
