@@ -239,7 +239,7 @@
 
             const selectedClass = classesCopy.find(_class => _class.alias === alias);
 
-        // If we selected an archetype, remove its base class and other archetypes of the same base
+        //Stops base classes and archetypes from rolling together.
         if (selectedClass?.baseClass) {
             const baseClassAlias = selectedClass.baseClass;
             classesCopy = classesCopy.filter(function(_class) {
@@ -247,14 +247,12 @@
             });
         }
 
-        // if baseclass and alias match, don't use (so archetypes don't select base class)
         classesCopy = classesCopy.filter(function(_class) {
             return _class.baseClass !== alias;
         });
 
             // paladins/sacred fist cant multiclass with : bard, barbarian, druid, and acolyte of the skin
             // monks cant multiclass with : bard, barbarian
-            // archetypes can't be the core class
             switch (alias) {
                 
                 case 'bard':
