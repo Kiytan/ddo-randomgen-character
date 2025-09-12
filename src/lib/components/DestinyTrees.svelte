@@ -7,6 +7,7 @@
     import { writable } from "svelte/store";
 
     let [ data, loading, error ] = [ null, writable(true), null];
+    $: dataValue = $data;
 
     onMount(async () => {
         [ data, loading, error ] = await fetchStore('destiny_trees');
@@ -39,9 +40,9 @@
         {:else if $error}
         <p class="text-red-500">{$error}</p>
         {:else}
-            {#if $data.destiny_trees}
+            {#if dataValue?.destiny_trees}
                 <div class="flex flex-wrap justify-center gap-3 p-2 grow rounded-lg text-gray-900 bg-gray-100 dark:bg-gray-700 dark:text-white">
-                    {#each Object.values($data.destiny_trees).filter(d => !d.core && !d.upcoming) as data}
+                    {#each Object.values(dataValue.destiny_trees).filter(d => !d.core && !d.upcoming) as data}
                         <div class="flex items-center pl-3">
                             <input id="destiny_trees_{data.alias}" type="checkbox" bind:checked={data.selected} on:change={handleChange}
                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">

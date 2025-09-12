@@ -7,6 +7,7 @@
     export let displayNames : boolean
 
     let [ data, loading, error ] = [ null, writable(true), null];
+    $: dataValue = $data;
 
     onMount(async () => {
         [ data, loading, error ] = await fetchStore('classes');
@@ -56,11 +57,11 @@
         {:else if $error}
         <p class="text-red-500">{$error}</p>
         {:else }
-            {#if $data.classes.free.length}
+            {#if dataValue?.classes?.free?.length}
                 <div class="flex flex-col gap-2 p-2 bg-blue-500 grow rounded-l-lg">
                     <span class="text-center text-slate-900">Free</span>
                     <div class="flex flex-wrap justify-center gap-2">
-                        {#each Object.values($data.classes.free) as data}
+                        {#each Object.values(dataValue.classes.free) as data}
                             <input class="hidden" bind:checked={data.selected} type="checkbox" id="free_{data.alias}"
                                    on:change={handleChange}
                             />
@@ -88,11 +89,11 @@
                     </div>
                 </div>
             {/if}
-            {#if $data.classes.premium.length}
+            {#if dataValue?.classes?.premium?.length}
                 <div class="flex flex-col gap-2 p-2 bg-red-500 grow">
                     <span class="text-center text-slate-900">Premium</span>
                     <div class="flex flex-wrap justify-center gap-2">
-                        {#each Object.values($data.classes.premium) as data}
+                        {#each Object.values(dataValue.classes.premium) as data}
                             <input class="hidden" bind:checked={data.selected} type="checkbox" id="premium_{data.alias}"
                                    on:change={handleChange}
                             />
@@ -120,11 +121,11 @@
                     </div>
                 </div>
             {/if}
-            {#if $data.classes.archetype.length}
+            {#if dataValue?.classes?.archetype?.length}
                 <div class="flex flex-col gap-2 p-2 bg-yellow-500 grow rounded-r-lg">
                     <span class="text-center text-slate-900">Archetype</span>
                     <div class="flex flex-wrap justify-center gap-2">
-                        {#each Object.values($data.classes.archetype) as data}
+                        {#each Object.values(dataValue.classes.archetype) as data}
                             <input class="hidden" bind:checked={data.selected} type="checkbox" id="archetype_{data.alias}"
                                    on:change={handleChange}
                             />

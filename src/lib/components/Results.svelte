@@ -35,6 +35,7 @@
 
     let results : any[] = [];
     let errors : any[] = [];
+    $: dataValue = $data;
 
     let randomizeEnhancementTrees = true;
     let capstone_tree = "no_capstone";
@@ -828,8 +829,8 @@
     </div>
     
     <ButtonGroup class="rounded-lg justify-center shadow-none">
-        <Button outline color="blue" disabled={ !$data } on:click={ handleClick }>Randomize !</Button>
-        <Button outline color="red" disabled={ !$data || !results.length } on:click={ clearResults }>Clear</Button>
+        <Button outline color="blue" disabled={ !dataValue } on:click={ handleClick }>Randomize !</Button>
+        <Button outline color="red" disabled={ !dataValue || !results.length } on:click={ clearResults }>Clear</Button>
     </ButtonGroup>
 
     <div class="flex mb-5">
