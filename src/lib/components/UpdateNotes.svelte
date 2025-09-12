@@ -12,6 +12,27 @@ let open = false;
 
 <Modal title="Update Notes" bind:open={open} autoclose outsideclose>
     <div class="flex flex-col gap-5 text-white">
+        <div class="flex flex-col gap-2 bg-green-700 rounded p-3">
+            <h2 class="text-2xl underline font-bold">2025-09-12</h2>
+
+            <div class="flex flex-col gap-1">
+                <h3 class="text-xl font-bold">Bug Fixes</h3>
+                <ul>
+                    <li>- Fixed archetype + base class level distribution bug where selecting only 2 classes (one being an archetype of the other) would sometimes generate incomplete levels (e.g., 17 Fighter instead of 20)</li>
+                    <li>- Improved accessibility by adding proper aria-labels to download and copy buttons</li>
+                </ul>
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <h3 class="text-xl font-bold">Technical Updates</h3>
+                <ul>
+                    <li>- Upgraded to Svelte 5 and SvelteKit 2 for improved performance and modern features</li>
+                    <li>- Updated all dependencies to latest stable versions</li>
+                    <li>- Enhanced build system with Vite 7 and Tailwind CSS 3.4</li>
+                </ul>
+            </div>
+        </div>
+
         <div class="flex flex-col gap-2 bg-orange-700 rounded p-3">
             <h2 class="text-2xl underline font-bold">2025-07-15</h2>
 
