@@ -13,6 +13,17 @@ let open = false;
 <Modal title="Update Notes" bind:open={open} autoclose outsideclose>
     <div class="flex flex-col gap-5 text-white">
         <div class="flex flex-col gap-2 bg-green-700 rounded p-3">
+            <h2 class="text-2xl underline font-bold">2026-02-08</h2>
+
+            <div class="flex flex-col gap-1">
+                <h3 class="text-xl font-bold">Features</h3>
+                <ul>
+                    <li>- Added Arcane Trickster archetype (currently using a temp icon, will update when we get an official one)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-2 bg-orange-700 rounded p-3">
             <h2 class="text-2xl underline font-bold">2025-09-12</h2>
 
             <div class="flex flex-col gap-1">

@@ -225,6 +225,19 @@ const archetype_classes: Array<Class> = [
         ],
         baseClass: "warlock"
     },
+        {
+        alias: "arcane_trickster",
+        name: "Arcane Trickster",
+        selected: true,
+        isArchetype: true,
+        weightedStats: [ { name: "INT", value: 3 }, ],
+        enhancementTrees: [
+            { name : "Arcane Trickster", alias: "arcane_trickster", value: 0 },
+            { name : "Mechanic", alias: "mechanic", value: 0 },
+            { name : "Thief-Acrobat", alias: "thief_acrobat", value: 0 },
+        ],
+        baseClass: "rogue"
+    },
     {
         alias: "blight_caster",
         name: "Blight Caster",
