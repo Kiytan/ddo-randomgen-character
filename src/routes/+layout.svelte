@@ -5,7 +5,11 @@
 </script>
 
 <main id="main">
-  <div class="flex justify-end">
+  <div class="flex justify-end items-center gap-4">
+    <!--Stick a link to a main site here, or just comment out the next 3 lines-->
+    <a href="https://ddotools.xyz" class="back-to-main" title="Back to DDO Tools">
+      ← ddotools.xyz
+    </a>
     <DarkMode>
       <svelte:fragment slot="lightIcon">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">

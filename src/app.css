@@ -14,3 +14,10 @@ img {
 button[aria-label="Close"] {
     color: black !important;
 }
+
+.back-to-main {
+    position: static;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
