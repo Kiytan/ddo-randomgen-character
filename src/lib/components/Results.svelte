@@ -23,6 +23,7 @@
     } from '../../store'
 
     import { slide } from "svelte/transition";
+    import { untrack } from "svelte";
     import type { Alignment} from "../../routes/alignments/+server";
     import type { Race } from "../../routes/races/+server";
     import type { Class } from "../../routes/classes/+server";
@@ -33,20 +34,20 @@
         weight: number
     }
 
-    let results : any[] = [];
-    let errors : any[] = [];
-    $: dataValue = $data;
+    let results : any[] = $state([]);
+    let errors : any[] = $state([]);
+    let dataValue = $derived($data);
 
-    let randomizeEnhancementTrees = true;
-    let capstone_tree = "no_capstone";
+    let randomizeEnhancementTrees = $state(true);
+    let capstone_tree = $state("no_capstone");
     let enhancementPoints = 80;
 
-    let randomizeDestinyTrees = true;
-    let destiny_tier5 = "no_destiny_tier5";
+    let randomizeDestinyTrees = $state(true);
+    let destiny_tier5 = $state("no_destiny_tier5");
 
-    let numberGen = [1, 2, 3];
+    let numberGen = $state([1, 2, 3]);
 
-    let weight = "no_weight";
+    let weight = $state("no_weight");
     const maxClasses = 3;
     const minClasses = 1;
     const base_stats : Array<Stat> = [
@@ -58,9 +59,9 @@
         {name: 'CHA', value: 8, weight: 1},
     ];
 
-    let racialPoints = 0;
-    let minRacialPoints = 0;
-    let maxRacialPoints = 14;
+    let racialPoints = $state(0);
+    const minRacialPoints = 0;
+    const maxRacialPoints = 14;
 
     const handleRacial = ({ target } : any) => {
         if (parseInt(target.value) < minRacialPoints) {
@@ -76,9 +77,9 @@
         racialPoints = parseInt(target.value)
     }
 
-    let destinyPoints = 60;
-    $: minDestinyPoints = 48 + $destinyTreesSelected.length;
-    $: maxDestinyPoints = 62 + $destinyTreesSelected.length;
+    let destinyPoints = $state(60);
+    let minDestinyPoints = $derived(48 + $destinyTreesSelected.length);
+    let maxDestinyPoints = $derived(62 + $destinyTreesSelected.length);
 
     const handleDestiny = ({ target } : any) => {
         if (parseInt(target.value) < minDestinyPoints) {
@@ -94,7 +95,18 @@
         destinyPoints = parseInt(target.value);
     }
 
-    $: destinyTreesSelected && (destinyPoints = destinyPoints - 1 < minDestinyPoints ? minDestinyPoints : (destinyPoints > maxDestinyPoints ? maxDestinyPoints : destinyPoints));
+    $effect(() => {
+        $destinyTreesSelected;
+        const min = minDestinyPoints;
+        const max = maxDestinyPoints;
+        untrack(() => {
+            if (destinyPoints - 1 < min) {
+                destinyPoints = min;
+            } else if (destinyPoints > max) {
+                destinyPoints = max;
+            }
+        });
+    });
 
     const groupBy = (xs: any, key: any) => {
         return xs.reduce((rv: any, x: any) => {
@@ -655,10 +667,18 @@
                 errors = [];
             }
         } catch (e) {
-            // fallback
             setTimeout(() => errors = [], 1000)
         }
     }
+
+    $effect(() => {
+        errors.forEach((error, i) => {
+            if (error?.show && !error._started) {
+                error._started = true;
+                timeout(i);
+            }
+        });
+    });
 
     const createBlobText = (item: any) => {
         const classes = Object.entries(item.classes).map(([, _class]: [string, any]) => `${_class.levels} ${_class.name}`).join(" / ");
@@ -735,12 +755,12 @@
                                 <div class="flex items-center">
                                     <Label for='racial-pts' class='whitespace-nowrap mr-2'>Racial Points</Label>
                                     <Input id='racial-pts' size="sm"
-                                           bind:placeholder="{minRacialPoints}"
+                                           placeholder={minRacialPoints}
                                            type="number"
-                                           bind:min="{ minRacialPoints }"
-                                           bind:max="{ maxRacialPoints }"
+                                           min={minRacialPoints}
+                                           max={maxRacialPoints}
                                            value={ racialPoints }
-                                           on:change={ (e) => handleRacial(e) }
+                                           onchange={ (e) => handleRacial(e) }
                                     />
                                 </div>
                             </div>
@@ -778,12 +798,12 @@
                                 <div class="flex items-center">
                                     <Label for='destiny-pts' class='whitespace-nowrap mr-2'>Destiny Points</Label>
                                     <Input id='destiny-pts' size="sm"
-                                           bind:placeholder="{ minDestinyPoints }"
+                                           placeholder={minDestinyPoints}
                                            type="number"
-                                           bind:min="{ minDestinyPoints }"
-                                           bind:max="{ maxDestinyPoints }"
+                                           min={minDestinyPoints}
+                                           max={maxDestinyPoints}
                                            value={ destinyPoints }
-                                           on:change={ e => handleDestiny(e) }
+                                           onchange={ e => handleDestiny(e) }
                                     />
                                 </div>
                             </div>
@@ -798,15 +818,15 @@
                 <span class="mr-2">Number of multiclass :</span>
                 <div class="flex flex-wrap items-center justify-center gap-3 grow">
                     <div class="flex items-center">
-                        <input id="checkbox_1" type="checkbox" bind:group={numberGen} value="{1}" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                        <input id="checkbox_1" type="checkbox" bind:group={numberGen} value={1} class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
                         <label for="checkbox_1" class="w-full ml-2 text-sm font-medium">1 class</label>
                     </div>
                     <div class="flex items-center">
-                        <input id="checkbox_2" type="checkbox" bind:group={numberGen} value="{2}" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                        <input id="checkbox_2" type="checkbox" bind:group={numberGen} value={2} class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
                         <label for="checkbox_2" class="w-full ml-2 text-sm font-medium">2 classes</label>
                     </div>
                     <div class="flex items-center">
-                        <input id="checkbox_3" type="checkbox" bind:group={numberGen} value="{3}" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                        <input id="checkbox_3" type="checkbox" bind:group={numberGen} value={3} class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
                         <label for="checkbox_3" class="w-full ml-2 text-sm font-medium">3 classes</label>
                     </div>
                 </div>
@@ -836,8 +856,8 @@
     </div>
     
     <ButtonGroup class="rounded-lg justify-center shadow-none">
-        <Button outline color="blue" disabled={ !dataValue } on:click={ handleClick }>Randomize !</Button>
-        <Button outline color="red" disabled={ !dataValue || !results.length } on:click={ clearResults }>Clear</Button>
+        <Button outline color="blue" disabled={ !dataValue } onclick={ handleClick }>Randomize !</Button>
+        <Button outline color="red" disabled={ !dataValue || !results.length } onclick={ clearResults }>Clear</Button>
     </ButtonGroup>
 
     <div class="flex mb-5">
@@ -869,7 +889,7 @@
                                 </svg>
                             </Badge>
                             <Popover transition={slide}>
-                                { @html item.stats.map((stat) => `<span class="font-bold">${stat.name}</span> : ${stat.value} <span class="text-${getStatMod(stat.value).includes('+') ? 'green' : 'red'}-400">(${getStatMod(stat.value)})</span>`).join(" - ") }
+                                {@html item.stats.map((stat) => `<span class="font-bold">${stat.name}</span> : ${stat.value} <span class="text-${getStatMod(stat.value).includes('+') ? 'green' : 'red'}-400">(${getStatMod(stat.value)})</span>`).join(" - ") }
                             </Popover>
                         </TableBodyCell>
                         <TableBodyCell class="text-center">
@@ -901,7 +921,7 @@
                                 </Badge>
                                 <Popover transition={slide}>
                                     <div class="flex flex-col">
-                                        { @html item.destiny_trees.map(trees => `<div>${trees.name} : <span class="text-blue-400">${trees.value}</span></div>`).join("") }
+                                        {@html item.destiny_trees.map(trees => `<div>${trees.name} : <span class="text-blue-400">${trees.value}</span></div>`).join("") }
                                     </div>
                                 </Popover>
                             {:else}
@@ -910,13 +930,13 @@
                         </TableBodyCell>
                         <TableBodyCell>
                             <div class="flex justify-center items-center gap-2">
-                                <button on:click={ download(item) } title="Download button" aria-label="Download character build">
+                                <button onclick={ () => download(item) } title="Download button" aria-label="Download character build">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 cursor-pointer">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
                                     </svg>
                                 </button>
                                 /
-                                <button on:click={ navigator.clipboard.writeText(createBlobText(item)) } title="Copy button" aria-label="Copy character build to clipboard">
+                                <button onclick={ () => navigator.clipboard.writeText(createBlobText(item)) } title="Copy button" aria-label="Copy character build to clipboard">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 cursor-pointer">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.057 1.123-.08M15.75 18H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08M15.75 18.75v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5A3.375 3.375 0 006.375 7.5H5.25m11.9-3.664A2.251 2.251 0 0015 2.25h-1.5a2.251 2.251 0 00-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M6.75 7.5H4.875c-.621 0-1.125.504-1.125 1.125v12c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V16.5a9 9 0 00-9-9z" />
                                     </svg>
@@ -932,7 +952,7 @@
 
 <div class="fixed top-12 right-5 flex flex-col gap-3">
     {#each errors.filter(e => e) as error, i}
-        <Toast on:load={ timeout(i) } divClass="w-full max-w-xs p-4 text-gray-500 bg-red-400 dark:bg-red-500 shadow text-slate-900 dark:text-white gap-3 border border-red-500"
+        <Toast divClass="w-full max-w-xs p-4 text-gray-500 bg-red-400 dark:bg-red-500 shadow text-slate-900 dark:text-white gap-3 border border-red-500"
                transition={slide}
                bind:open={error.show}
         >

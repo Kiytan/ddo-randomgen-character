@@ -6,7 +6,7 @@ let open = false;
 
 <div class="flex justify-center">
     <div class="flex">
-        <Button on:click={() => open = true}>Update Notes</Button>
+        <Button onclick={() => open = true}>Update Notes</Button>
     </div>
 </div>
 
@@ -137,7 +137,7 @@ let open = false;
             </div>
         </div>
     </div>
-    <svelte:fragment slot='footer'>
+    {#snippet footer()}
         <Button>Close</Button>
-    </svelte:fragment>
+    {/snippet}
 </Modal>

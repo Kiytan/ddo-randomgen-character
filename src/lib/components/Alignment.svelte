@@ -10,11 +10,16 @@
     import { writable } from "svelte/store";
 
 
-    let [ data, loading, error ] = [ null, writable(true), null];
-    $: dataValue = $data;
+    let data = $state(null);
+    let loading = $state(writable(true));
+    let error = $state(null);
+    let dataValue = $derived($data);
 
     onMount(async () => {
-        [ data, loading, error ] = await fetchStore('alignments');
+        const result = await fetchStore('alignments');
+        data = result[0];
+        loading = result[1];
+        error = result[2];
     })
 
     const handleChange = () => {
@@ -39,16 +44,16 @@
 <div class="flex flex-col justify-center gap-2">
     <span class="text-orange-500 mr-2">Alignment Selector</span>
     <div class="flex flex-wrap gap-3">
-        <Checkbox checked={$hasAllLawfulAlignmentsSelected && $hasAllNeutralAlignmentsSelected && $hasAllChaoticAlignmentsSelected } on:change={e => toggleAll(e)}>
+        <Checkbox checked={$hasAllLawfulAlignmentsSelected && $hasAllNeutralAlignmentsSelected && $hasAllChaoticAlignmentsSelected } onchange={e => toggleAll(e)}>
             Select all
         </Checkbox>
-        <Checkbox checked={$hasAllLawfulAlignmentsSelected} on:change={e => toggle(e, 'lawful')}>
+        <Checkbox checked={$hasAllLawfulAlignmentsSelected} onchange={e => toggle(e, 'lawful')}>
             Select all lawful alignments
         </Checkbox>
-        <Checkbox checked={$hasAllNeutralAlignmentsSelected} on:change={e => toggle(e, 'neutral')}>
+        <Checkbox checked={$hasAllNeutralAlignmentsSelected} onchange={e => toggle(e, 'neutral')}>
             Select all neutral alignments
         </Checkbox>
-        <Checkbox checked={$hasAllChaoticAlignmentsSelected} on:change={e => toggle(e, 'chaotic')}>
+        <Checkbox checked={$hasAllChaoticAlignmentsSelected} onchange={e => toggle(e, 'chaotic')}>
             Select all chaotic alignments
         </Checkbox>
     </div>
@@ -64,7 +69,7 @@
                 <div class="flex flex-wrap justify-center gap-3 p-2 grow rounded-lg text-gray-900 bg-gray-100 dark:bg-gray-700 dark:text-white">
                     {#each Object.values(dataValue.alignments) as data}
                         <div class="flex items-center pl-3">
-                            <input id="alignments_{data.alias}" type="checkbox" bind:checked={data.selected} on:change={handleChange}
+                            <input id="alignments_{data.alias}" type="checkbox" bind:checked={data.selected} onchange={handleChange}
                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
                             <label for="alignments_{data.alias}" class="w-full ml-2 text-sm font-medium">
                                 {data.name}

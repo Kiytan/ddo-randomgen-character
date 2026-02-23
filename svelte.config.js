@@ -1,4 +1,4 @@
-import preprocess from "svelte-preprocess";
+import { sveltePreprocess } from "svelte-preprocess";
 import adapter from "@sveltejs/adapter-static";
 import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 
@@ -10,7 +10,7 @@ const config = {
   // for more information about preprocessors
   preprocess: [
     vitePreprocess(),
-    preprocess({
+    sveltePreprocess({
       postcss: true,
     }),
   ],

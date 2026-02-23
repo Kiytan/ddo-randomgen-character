@@ -4,13 +4,18 @@
     import {fetchStore, hasAllFreeClassSelected, hasAllPremiumClassSelected, hasAllArchetypeClassSelected} from '../../store'
     import { writable } from "svelte/store";
 
-    export let displayNames : boolean
+    let { displayNames }: { displayNames: boolean } = $props()
 
-    let [ data, loading, error ] = [ null, writable(true), null];
-    $: dataValue = $data;
+    let data = $state(null);
+    let loading = $state(writable(true));
+    let error = $state(null);
+    let dataValue = $derived($data);
 
     onMount(async () => {
-        [ data, loading, error ] = await fetchStore('classes');
+        const result = await fetchStore('classes');
+        data = result[0];
+        loading = result[1];
+        error = result[2];
     })
 
     const handleChange = () => {
@@ -35,16 +40,16 @@
 <div class="flex flex-col justify-center gap-2">
     <span class="text-orange-500 mr-2">Class Selector</span>
     <div class="flex flex-wrap gap-3">
-        <Checkbox checked={$hasAllFreeClassSelected && $hasAllPremiumClassSelected && $hasAllArchetypeClassSelected } on:change={e => toggleAll(e)}>
+        <Checkbox checked={$hasAllFreeClassSelected && $hasAllPremiumClassSelected && $hasAllArchetypeClassSelected } onchange={e => toggleAll(e)}>
             Select all
         </Checkbox>
-        <Checkbox checked={$hasAllFreeClassSelected} on:change={e => toggle(e, 'free')}>
+        <Checkbox checked={$hasAllFreeClassSelected} onchange={e => toggle(e, 'free')}>
             Select all free classes
         </Checkbox>
-        <Checkbox checked={$hasAllPremiumClassSelected} on:change={e => toggle(e, 'premium')}>
+        <Checkbox checked={$hasAllPremiumClassSelected} onchange={e => toggle(e, 'premium')}>
             Select all premium classes
         </Checkbox>
-        <Checkbox checked={$hasAllArchetypeClassSelected} on:change={e => toggle(e, 'archetype')}>
+        <Checkbox checked={$hasAllArchetypeClassSelected} onchange={e => toggle(e, 'archetype')}>
             Select all archetype classes
         </Checkbox>
     </div>
@@ -63,7 +68,7 @@
                     <div class="flex flex-wrap justify-center gap-2">
                         {#each Object.values(dataValue.classes.free) as data}
                             <input class="hidden" bind:checked={data.selected} type="checkbox" id="free_{data.alias}"
-                                   on:change={handleChange}
+                                   onchange={handleChange}
                             />
                             <label for="free_{data.alias}" class="flex flex-col items-center">
                                 <img src="images/classes/free/{data.alias}_class_icon.png"
@@ -95,7 +100,7 @@
                     <div class="flex flex-wrap justify-center gap-2">
                         {#each Object.values(dataValue.classes.premium) as data}
                             <input class="hidden" bind:checked={data.selected} type="checkbox" id="premium_{data.alias}"
-                                   on:change={handleChange}
+                                   onchange={handleChange}
                             />
                             <label for="premium_{data.alias}" class="flex flex-col items-center">
                                 <img src="images/classes/premium/{data.alias}_class_icon.png"
@@ -127,7 +132,7 @@
                     <div class="flex flex-wrap justify-center gap-2">
                         {#each Object.values(dataValue.classes.archetype) as data}
                             <input class="hidden" bind:checked={data.selected} type="checkbox" id="archetype_{data.alias}"
-                                   on:change={handleChange}
+                                   onchange={handleChange}
                             />
                             <label for="archetype_{data.alias}" class="flex flex-col items-center">
                                 <img src="images/classes/archetype/{data.alias}_class_icon.png"

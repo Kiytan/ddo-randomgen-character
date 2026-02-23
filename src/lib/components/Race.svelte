@@ -4,13 +4,18 @@
     import { fetchStore, hasAllFreeRaceSelected, hasAllPremiumRaceSelected, hasAllIconicRaceSelected } from '../../store'
     import { writable } from "svelte/store";
 
-    export let displayNames
+    let { displayNames } = $props()
 
-    let [ data, loading, error ] = [ null, writable(true), null];
-    $: dataValue = $data;
+    let data = $state(null);
+    let loading = $state(writable(true));
+    let error = $state(null);
+    let dataValue = $derived($data);
 
     onMount(async () => {
-        [ data, loading, error ] = await fetchStore('races');
+        const result = await fetchStore('races');
+        data = result[0];
+        loading = result[1];
+        error = result[2];
     })
 
     const handleChange = () => {
@@ -35,16 +40,16 @@
 <div class="flex flex-col justify-center gap-2">
     <span class="text-orange-500 mr-2">Race Selector</span>
     <div class="flex flex-wrap gap-3">
-        <Checkbox checked={$hasAllFreeRaceSelected && $hasAllPremiumRaceSelected && $hasAllIconicRaceSelected } on:change={e => toggleAll(e)}>
+        <Checkbox checked={$hasAllFreeRaceSelected && $hasAllPremiumRaceSelected && $hasAllIconicRaceSelected } onchange={e => toggleAll(e)}>
             Select all
         </Checkbox>
-        <Checkbox checked={$hasAllFreeRaceSelected} on:change={e => toggle(e, 'free')}>
+        <Checkbox checked={$hasAllFreeRaceSelected} onchange={e => toggle(e, 'free')}>
             Select all free races
         </Checkbox>
-        <Checkbox checked={$hasAllPremiumRaceSelected} on:change={e => toggle(e, 'premium')}>
+        <Checkbox checked={$hasAllPremiumRaceSelected} onchange={e => toggle(e, 'premium')}>
             Select all premium races
         </Checkbox>
-        <Checkbox checked={$hasAllIconicRaceSelected} on:change={e => toggle(e, 'iconic')}>
+        <Checkbox checked={$hasAllIconicRaceSelected} onchange={e => toggle(e, 'iconic')}>
             Select all iconic races
         </Checkbox>
     </div>
@@ -62,7 +67,7 @@
                     <div class="flex flex-wrap justify-center gap-2">
                         {#each Object.values(dataValue.races.free) as data}
                             <input class="hidden" bind:checked={data.selected} type="checkbox" id="free_{data.alias}"
-                                   on:change={handleChange}
+                                   onchange={handleChange}
                             />
                             <label for="free_{data.alias}" class="flex flex-col items-center">
                                 <img src="images/races/free/{data.alias}_race_icon.png"
@@ -76,7 +81,7 @@
                                     {#if data?.statsMod}
                                         <span>
                                             Stats modifiers :
-                                            { @html Object.entries(data.statsMod).map(([idx, changes]) => changes.map(incr => `<span class="${idx === "increasedStats" ? 'text-green-500' : 'text-red-500'}">${incr.name} : ${idx === "increasedStats" ? '+' + incr.value : -incr.value}</span>`).join(', ')).join(', ') }
+                                            {@html Object.entries(data.statsMod).map(([idx, changes]) => changes.map(incr => `<span class="${idx === "increasedStats" ? 'text-green-500' : 'text-red-500'}">${incr.name} : ${idx === "increasedStats" ? '+' + incr.value : -incr.value}</span>`).join(', ')).join(', ') }
                                         </span>
                                     {/if}
                                 </Tooltip>
@@ -94,7 +99,7 @@
                     <div class="flex flex-wrap justify-center gap-2">
                         {#each Object.values(dataValue.races.premium) as data}
                             <input class="hidden" bind:checked={data.selected} type="checkbox" id="premium_{data.alias}"
-                                   on:change={handleChange}
+                                   onchange={handleChange}
                             />
                             <label for="premium_{data.alias}" class="flex flex-col items-center">
                                 <img src="images/races/premium/{data.alias}_race_icon.png"
@@ -108,7 +113,7 @@
                                     {#if data?.statsMod}
                                         <span>
                                             Stats modifiers :
-                                            { @html Object.entries(data.statsMod).map(([idx, changes]) => changes.map(incr => `<span class="${idx === "increasedStats" ? 'text-green-500' : 'text-red-500'}">${incr.name} : ${idx === "increasedStats" ? '+' + incr.value : -incr.value}</span>`).join(', ')).join(', ') }
+                                            {@html Object.entries(data.statsMod).map(([idx, changes]) => changes.map(incr => `<span class="${idx === "increasedStats" ? 'text-green-500' : 'text-red-500'}">${incr.name} : ${idx === "increasedStats" ? '+' + incr.value : -incr.value}</span>`).join(', ')).join(', ') }
                                         </span>
                                     {/if}
                                 </Tooltip>
@@ -126,7 +131,7 @@
                     <div class="flex flex-wrap justify-center gap-2">
                         {#each Object.values(dataValue.races.iconic) as data}
                             <input class="hidden" bind:checked={data.selected} type="checkbox" id="iconic_{data.alias}"
-                                   on:change={handleChange}
+                                   onchange={handleChange}
                             />
                             <label for="iconic_{data.alias}" class="flex flex-col items-center">
                                 <img src="images/races/iconic/{data.alias}_race_icon.png"
@@ -143,7 +148,7 @@
                                     {#if data?.statsMod}
                                         <span>
                                             Stats modifiers :
-                                            { @html Object.entries(data.statsMod).map(([idx, changes]) => changes.map(incr => `<span class="${idx === "increasedStats" ? 'text-green-500' : 'text-red-500'}">${incr.name} : ${idx === "increasedStats" ? '+' + incr.value : -incr.value}</span>`).join(', ')).join(', ') }
+                                            {@html Object.entries(data.statsMod).map(([idx, changes]) => changes.map(incr => `<span class="${idx === "increasedStats" ? 'text-green-500' : 'text-red-500'}">${incr.name} : ${idx === "increasedStats" ? '+' + incr.value : -incr.value}</span>`).join(', ')).join(', ') }
                                         </span>
                                     {/if}
                                 </Tooltip>
