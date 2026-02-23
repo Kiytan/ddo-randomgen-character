@@ -18,7 +18,7 @@ let open = false;
             <div class="flex flex-col gap-1">
                 <h3 class="text-xl font-bold">Features</h3>
                 <ul>
-                    <li>- Added Arcane Trickster archetype (currently using a temp icon, will update when we get an official one)</li>
+                    <li>- Added Arcane Trickster archetype (currently using a temp icon, will update when we get an official one from the DDO update)</li>
                 </ul>
             </div>
         </div>
