@@ -169,6 +169,15 @@ const premium_races: Array<Race> = [
             loweredStats : [ { name: "INT", value: 2 } ],
         }
     },
+        {
+        alias: "duergar",
+        name: "Duergar",
+        selected: true,
+        isIconic: false,
+        statsMod: {
+            increasedStats : [ { name: "STR", value: 1 } ,{ name: "CON", value: 1 }],
+        }
+    },
     {
         alias: "tabaxi",
         name: "Tabaxi",
@@ -257,6 +266,17 @@ const iconic_races: Array<Race> = [
         isIconic: true,
         forcedClass: 'fighter',
         forcedClassName: 'Fighter',
+    },
+     {
+        alias: "mindcleaver",
+        name: "Mindcleaver",
+        selected: true,
+        isIconic: true,
+        forcedClass: 'fighter',
+        forcedClassName: 'Fighter',
+        statsMod: {
+            increasedStats : [ { name: "CON", value: 1 }, { name: "INT", value: 1 }],
+        }
     },
     {
         alias: "shadar_kai",
