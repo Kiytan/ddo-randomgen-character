@@ -30,5 +30,8 @@
     "flowbite": "^2.5.2",
     "flowbite-svelte": "^0.46.23",
     "tailwind-merge": "^3.3.1"
+  },
+  "overrides": {
+    "cookie": "^0.7.2"
   }
 }
