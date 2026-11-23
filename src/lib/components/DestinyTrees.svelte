@@ -2,27 +2,27 @@
     import { onMount } from 'svelte';
     import { Spinner, Checkbox } from 'flowbite-svelte';
     import {
-        fetchStore, hasAllDestinyTreesSelected, setSelected } from '../../store'
-    import { writable } from "svelte/store";
+        fetchStore, hasAllDestinyTreesSelected, setSelected, type DataState } from '../../store'
+    import { writable, type Writable } from "svelte/store";
 
-    let data = $state(null);
-    let loading = $state(writable(true));
-    let error = $state(null);
-    let dataValue = $derived($data);
+    let data: Writable<DataState> = $state(writable({}));
+    let loading: Writable<boolean> = $state(writable(true));
+    let error: Writable<boolean | string> = $state(writable(false));
+    let dataValue: DataState = $derived($data);
 
     onMount(async () => {
-        const result = await fetchStore('destiny_trees');
-        data = result[0];
-        loading = result[1];
-        error = result[2];
+        const [store, loadingStore, errorStore] = await fetchStore('destiny_trees');
+        data = store;
+        loading = loadingStore;
+        error = errorStore;
     })
 
     const handleChange = () => {
         data.set($data)
     }
 
-    const toggleAll = (e) => {
-        setSelected('destiny_trees', e.target.checked)
+    const toggleAll = (e: Event) => {
+        setSelected('destiny_trees', (e.target as HTMLInputElement).checked)
     }
 </script>
 

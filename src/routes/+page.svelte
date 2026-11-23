@@ -11,7 +11,7 @@
     import UniversalTrees from "#lib/components/UniversalTrees.svelte";
     import DestinyTrees from "#lib/components/DestinyTrees.svelte";
 
-    const displayNames = writable(browser && JSON.parse(localStorage.getItem("displayNames")) !== null ? JSON.parse(localStorage.getItem("displayNames")) : true);
+    const displayNames = writable(browser && JSON.parse(localStorage.getItem("displayNames") ?? "null") !== null ? JSON.parse(localStorage.getItem("displayNames") ?? "null") : true);
 
     if (browser) {
         displayNames.subscribe((value: any) => {

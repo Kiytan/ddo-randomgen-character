@@ -4,8 +4,18 @@ import type { Race } from "./routes/races/+server";
 import type { Class } from "./routes/classes/+server";
 import type { Tree } from "./routes/destiny_trees/+server";
 
-type Data = Race & Class & Tree & {
+export type Data = Race & Class & Tree & {
     selected: boolean | string;
+}
+
+/** Shape of the shared `data` store once each section has been fetched. */
+export interface DataState {
+    races?: Record<string, Data[]>;
+    classes?: Record<string, Data[]>;
+    alignments?: Data[];
+    destiny_trees?: Data[];
+    universal_trees?: Data[];
+    stats?: { name: string; selected: string }[];
 }
 
 type DataProps = {
@@ -20,7 +30,8 @@ export const data: Writable<any> = writable({})
 
 export let selectedStartingStats: Writable<any> = writable('28')
 
-export async function fetchStore(url: string): Promise<(Writable<any> | Writable<boolean> | (() => Promise<void>))[]> {
+// Returns [data store, loading flag, error message (false when none), reload function].
+export async function fetchStore(url: string): Promise<[Writable<any>, Writable<boolean>, Writable<boolean | string>, () => Promise<void>]> {
     const loading: Writable<boolean> = writable(false)
     const error: Writable<boolean | string> = writable(false)
 
@@ -170,9 +181,9 @@ export const alignmentsSelected: Readable<Data[]> = derived(
     }
 );
 
-export const hasAllLawfulAlignmentsSelected: Readable<DataArray> = derived(
+export const hasAllLawfulAlignmentsSelected: Readable<boolean> = derived(
     data,
-    ($data: any): DataArray | any => {
+    ($data: any): boolean => {
         if (!$data.alignments) return false;
 
         return Object.values($data.alignments).filter((alignment: any) => {
@@ -181,9 +192,9 @@ export const hasAllLawfulAlignmentsSelected: Readable<DataArray> = derived(
     }
 );
 
-export const hasAllNeutralAlignmentsSelected: Readable<DataArray> = derived(
+export const hasAllNeutralAlignmentsSelected: Readable<boolean> = derived(
     data,
-    ($data: any): DataArray | any => {
+    ($data: any): boolean => {
         if (!$data.alignments) return false;
 
         return Object.values($data.alignments).filter((alignment: any) => {
@@ -192,9 +203,9 @@ export const hasAllNeutralAlignmentsSelected: Readable<DataArray> = derived(
     }
 );
 
-export const hasAllChaoticAlignmentsSelected: Readable<DataArray> = derived(
+export const hasAllChaoticAlignmentsSelected: Readable<boolean> = derived(
     data,
-    ($data: any): DataArray | any => {
+    ($data: any): boolean => {
         if (!$data.alignments) return false;
 
         return Object.values($data.alignments).filter((alignment: any) => {

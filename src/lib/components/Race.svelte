@@ -1,33 +1,33 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import {Spinner, Checkbox, Tooltip} from 'flowbite-svelte';
-    import { fetchStore, hasAllFreeRaceSelected, hasAllPremiumRaceSelected, hasAllIconicRaceSelected, setSelected } from '../../store'
-    import { writable } from "svelte/store";
+    import { fetchStore, hasAllFreeRaceSelected, hasAllPremiumRaceSelected, hasAllIconicRaceSelected, setSelected, type DataState } from '../../store'
+    import { writable, type Writable } from "svelte/store";
 
-    let { displayNames } = $props()
+    let { displayNames }: { displayNames: boolean } = $props()
 
-    let data = $state(null);
-    let loading = $state(writable(true));
-    let error = $state(null);
-    let dataValue = $derived($data);
+    let data: Writable<DataState> = $state(writable({}));
+    let loading: Writable<boolean> = $state(writable(true));
+    let error: Writable<boolean | string> = $state(writable(false));
+    let dataValue: DataState = $derived($data);
 
     onMount(async () => {
-        const result = await fetchStore('races');
-        data = result[0];
-        loading = result[1];
-        error = result[2];
+        const [store, loadingStore, errorStore] = await fetchStore('races');
+        data = store;
+        loading = loadingStore;
+        error = errorStore;
     })
 
     const handleChange = () => {
         data.set($data)
     }
 
-    const toggleAll = (e) => {
-        setSelected('races', e.target.checked)
+    const toggleAll = (e: Event) => {
+        setSelected('races', (e.target as HTMLInputElement).checked)
     }
 
-    const toggle = (e, type) => {
-        setSelected('races', e.target.checked, (_, group) => group === type)
+    const toggle = (e: Event, type: string) => {
+        setSelected('races', (e.target as HTMLInputElement).checked, (_, group) => group === type)
     }
 </script>
 

@@ -26,6 +26,9 @@
     import { untrack } from "svelte";
     import type { Alignment} from "../../routes/alignments/+server";
     import type { Race } from "../../routes/races/+server";
+
+    // A stat or tree line shown in the results popovers, e.g. { name: 'STR', value: 18 }.
+    type NameValue = { name: string; value: number };
     import type { Class } from "../../routes/classes/+server";
 
     interface Stat {
@@ -755,7 +758,7 @@
                                 <div class="flex items-center">
                                     <Label for='racial-pts' class='whitespace-nowrap mr-2'>Racial Points</Label>
                                     <Input id='racial-pts' size="sm"
-                                           placeholder={minRacialPoints}
+                                           placeholder={String(minRacialPoints)}
                                            type="number"
                                            min={minRacialPoints}
                                            max={maxRacialPoints}
@@ -798,7 +801,7 @@
                                 <div class="flex items-center">
                                     <Label for='destiny-pts' class='whitespace-nowrap mr-2'>Destiny Points</Label>
                                     <Input id='destiny-pts' size="sm"
-                                           placeholder={minDestinyPoints}
+                                           placeholder={String(minDestinyPoints)}
                                            type="number"
                                            min={minDestinyPoints}
                                            max={maxDestinyPoints}
@@ -889,7 +892,7 @@
                                 </svg>
                             </Badge>
                             <Popover transition={slide}>
-                                {@html item.stats.map((stat) => `<span class="font-bold">${stat.name}</span> : ${stat.value} <span class="text-${getStatMod(stat.value).includes('+') ? 'green' : 'red'}-400">(${getStatMod(stat.value)})</span>`).join(" - ") }
+                                {@html item.stats.map((stat: NameValue) => `<span class="font-bold">${stat.name}</span> : ${stat.value} <span class="text-${getStatMod(stat.value).includes('+') ? 'green' : 'red'}-400">(${getStatMod(stat.value)})</span>`).join(" - ") }
                             </Popover>
                         </TableBodyCell>
                         <TableBodyCell class="text-center">
@@ -903,7 +906,7 @@
                                 <Popover transition={slide}>
                                     <div class="flex flex-col gap-2">
                                         {@html Object.entries(item.enhancement_trees).map(([key, trees]) => {
-                                            return `<span class="flex flex-col"><span class="underline">${key}</span> ${trees.map(stat => `<span>${stat.name} : <span class="text-blue-400">${stat.value} point${stat.value > 1 ? 's' : ''}</span></span>`).join(" ")} </span>`
+                                            return `<span class="flex flex-col"><span class="underline">${key}</span> ${(trees as NameValue[]).map((stat: NameValue) => `<span>${stat.name} : <span class="text-blue-400">${stat.value} point${stat.value > 1 ? 's' : ''}</span></span>`).join(" ")} </span>`
                                         }).join("")}
                                     </div>
                                 </Popover>
@@ -921,7 +924,7 @@
                                 </Badge>
                                 <Popover transition={slide}>
                                     <div class="flex flex-col">
-                                        {@html item.destiny_trees.map(trees => `<div>${trees.name} : <span class="text-blue-400">${trees.value}</span></div>`).join("") }
+                                        {@html item.destiny_trees.map((trees: NameValue) => `<div>${trees.name} : <span class="text-blue-400">${trees.value}</span></div>`).join("") }
                                     </div>
                                 </Popover>
                             {:else}
@@ -954,7 +957,7 @@
     {#each errors.filter(e => e) as error, i}
         <Toast divClass="w-full max-w-xs p-4 text-gray-500 bg-red-400 dark:bg-red-500 shadow text-slate-900 dark:text-white gap-3 border border-red-500"
                transition={slide}
-               bind:open={error.show}
+               bind:toastStatus={error.show}
         >
             { error.message }
         </Toast>

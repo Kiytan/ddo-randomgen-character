@@ -5,32 +5,32 @@
         fetchStore,
         hasAllLawfulAlignmentsSelected,
         hasAllNeutralAlignmentsSelected,
-        hasAllChaoticAlignmentsSelected, setSelected } from '../../store'
-    import { writable } from "svelte/store";
+        hasAllChaoticAlignmentsSelected, setSelected, type DataState } from '../../store'
+    import { writable, type Writable } from "svelte/store";
 
 
-    let data = $state(null);
-    let loading = $state(writable(true));
-    let error = $state(null);
-    let dataValue = $derived($data);
+    let data: Writable<DataState> = $state(writable({}));
+    let loading: Writable<boolean> = $state(writable(true));
+    let error: Writable<boolean | string> = $state(writable(false));
+    let dataValue: DataState = $derived($data);
 
     onMount(async () => {
-        const result = await fetchStore('alignments');
-        data = result[0];
-        loading = result[1];
-        error = result[2];
+        const [store, loadingStore, errorStore] = await fetchStore('alignments');
+        data = store;
+        loading = loadingStore;
+        error = errorStore;
     })
 
     const handleChange = () => {
         data.set($data)
     }
 
-    const toggleAll = (e) => {
-        setSelected('alignments', e.target.checked)
+    const toggleAll = (e: Event) => {
+        setSelected('alignments', (e.target as HTMLInputElement).checked)
     }
 
-    const toggle = (e, type) => {
-        setSelected('alignments', e.target.checked, alignment => alignment.alias.startsWith(type) || alignment.alias.includes(type))
+    const toggle = (e: Event, type: string) => {
+        setSelected('alignments', (e.target as HTMLInputElement).checked, alignment => alignment.alias.startsWith(type) || alignment.alias.includes(type))
     }
 </script>
 
