@@ -5,8 +5,7 @@
         fetchStore,
         hasAllLawfulAlignmentsSelected,
         hasAllNeutralAlignmentsSelected,
-        hasAllChaoticAlignmentsSelected
-    } from '../../store'
+        hasAllChaoticAlignmentsSelected, setSelected } from '../../store'
     import { writable } from "svelte/store";
 
 
@@ -27,17 +26,11 @@
     }
 
     const toggleAll = (e) => {
-        data.update(data => {
-            Object.values(data.alignments).forEach(alignment => alignment.selected = e.target.checked);
-            return data
-        })
+        setSelected('alignments', e.target.checked)
     }
 
     const toggle = (e, type) => {
-        data.update(data => {
-            Object.values(data.alignments).forEach(alignment => alignment.alias.startsWith(type) || alignment.alias.includes(type) ? alignment.selected = e.target.checked : null);
-            return data
-        })
+        setSelected('alignments', e.target.checked, alignment => alignment.alias.startsWith(type) || alignment.alias.includes(type))
     }
 </script>
 

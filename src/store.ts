@@ -45,6 +45,41 @@ export async function fetchStore(url: string): Promise<(Writable<any> | Writable
     return [ data, loading, error, get ]
 }
 
+/**
+ * Sets `selected` on the items of one data section (e.g. 'races', 'alignments'),
+ * for the "Select all ..." checkboxes.
+ *
+ * Svelte 5 only re-renders when it receives new objects, so the matching items are
+ * copied rather than mutated in place; mutating them updated the data but left the
+ * portraits/checkboxes on screen showing their old state.
+ *
+ * Handles both grouped sections ({ free: [...], premium: [...] }) and flat lists.
+ * `include` decides which items change; `group` is the group name for grouped sections.
+ */
+export function setSelected(
+    key: string,
+    checked: boolean,
+    include: (item: any, group?: string) => boolean = () => true
+): void {
+    const apply = (item: any, group?: string) => include(item, group) ? { ...item, selected: checked } : item;
+
+    data.update((current: any) => {
+        const section = current[key];
+        if (!section) return current;
+
+        const next = Array.isArray(section)
+            ? section.map((item: any) => apply(item))
+            : Object.fromEntries(
+                Object.entries(section).map(([group, items]) => [
+                    group,
+                    Array.isArray(items) ? items.map((item: any) => apply(item, group)) : apply(items)
+                ])
+            );
+
+        return { ...current, [key]: next };
+    });
+}
+
 export const racesSelected: Readable<Data[]> = derived(
     data,
     ($data: DataProps): Data[] => {

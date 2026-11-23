@@ -3,8 +3,7 @@
     import { Spinner, Checkbox } from 'flowbite-svelte';
     import {
         fetchStore,
-        hasAllUniversalTreesSelected,
-    } from '../../store'
+        hasAllUniversalTreesSelected, setSelected } from '../../store'
     import { writable } from "svelte/store";
 
     let data = $state(null);
@@ -24,10 +23,7 @@
     }
 
     const toggleAll = (e) => {
-        data.update(data => {
-            Object.values(data.universal_trees).forEach(tree => tree.selected = e.target.checked);
-            return data
-        })
+        setSelected('universal_trees', e.target.checked)
     }
 </script>
 

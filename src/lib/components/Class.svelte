@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import {Checkbox, Spinner, Tooltip} from 'flowbite-svelte';
-    import {fetchStore, hasAllFreeClassSelected, hasAllPremiumClassSelected, hasAllArchetypeClassSelected} from '../../store'
+    import {fetchStore, hasAllFreeClassSelected, hasAllPremiumClassSelected, hasAllArchetypeClassSelected, setSelected } from '../../store'
     import { writable } from "svelte/store";
 
     let { displayNames }: { displayNames: boolean } = $props()
@@ -23,17 +23,11 @@
     }
 
     const toggleAll = (e) => {
-        data.update(data => {
-            Object.values(data.classes).forEach(val => val.forEach(race => race.selected = e.target.checked));
-            return data
-        })
+        setSelected('classes', e.target.checked)
     }
 
     const toggle = (e, type) => {
-        data.update(data => {
-            Object.entries(data.classes).forEach(([idx, val]) => idx === type ? val.forEach(race => race.selected = e.target.checked) : null);
-            return data
-        })
+        setSelected('classes', e.target.checked, (_, group) => group === type)
     }
 </script>
 

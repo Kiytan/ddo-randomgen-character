@@ -2,8 +2,7 @@
     import { onMount } from 'svelte';
     import { Spinner, Checkbox } from 'flowbite-svelte';
     import {
-        fetchStore, hasAllDestinyTreesSelected,
-    } from '../../store'
+        fetchStore, hasAllDestinyTreesSelected, setSelected } from '../../store'
     import { writable } from "svelte/store";
 
     let data = $state(null);
@@ -23,10 +22,7 @@
     }
 
     const toggleAll = (e) => {
-        data.update(data => {
-            Object.values(data.destiny_trees).forEach(tree => tree.selected = e.target.checked);
-            return data
-        })
+        setSelected('destiny_trees', e.target.checked)
     }
 </script>
 
